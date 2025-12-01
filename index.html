@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Party Expense Splitter</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-bottom: 80px; /* Space for bottom interaction */
+        }
+        
+        /* Custom tweaks on top of Bootstrap */
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-radius: 1rem;
+        }
+
+        .btn-lg-custom {
+            padding: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .nav-pills .nav-link {
+            border-radius: 50rem;
+            padding: 10px 15px; /* Slightly tighter padding for mobile */
+            color: #6c757d;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: #0d6efd;
+            color: white;
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+        }
+
+        .price-tag {
+            font-weight: 700;
+            color: #198754;
+        }
+
+        .settlement-card {
+            border-left: 5px solid #0d6efd;
+            background: white;
+        }
+
+        .receipt-icon-btn {
+            font-size: 1.5rem;
+            color: #6c757d;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        /* Carousel Styling */
+        .carousel-item img {
+            height: 250px;
+            object-fit: cover;
+            border-radius: 1rem;
+        }
+        
+        .carousel-caption {
+            background: rgba(0,0,0,0.6);
+            border-radius: 1rem;
+            padding: 10px;
+        }
+
+        /* Admin Toggle Styling */
+        .admin-toggle-container {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Admin Toggle Switch -->
+<div class="admin-toggle-container">
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="adminSwitch" onchange="toggleAdminMode()">
+        <label class="form-check-label small fw-bold text-muted" for="adminSwitch" id="adminLabel">Viewer</label>
+    </div>
+</div>
+
+<div class="container py-4" style="max-width: 600px;">
+    
+    <!-- Header -->
+    <div class="text-center mb-4 mt-3">
+        <h1 class="fw-bold text-primary">🎉 Party Splitter</h1>
+        <p class="text-muted">Track expenses, save receipts, and settle debts.</p>
+    </div>
+
+    <!-- Navigation Pills -->
+    <ul class="nav nav-pills nav-fill mb-4 gap-1 p-2 bg-white rounded-pill shadow-sm">
+        <li class="nav-item">
+            <a class="nav-link active" id="tab-home" href="#" onclick="switchTab('home')">🏠 Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="tab-people" href="#" onclick="switchTab('people')">1. People</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="tab-expenses" href="#" onclick="switchTab('expenses')">2. Bills</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="tab-results" href="#" onclick="switchTab('results')">3. Settle</a>
+        </li>
+    </ul>
+
+    <!-- SECTION 0: HOME / FRONT PAGE -->
+    <div id="view-home" class="fade-in">
+        <div id="partyCarousel" class="carousel slide mb-4 shadow-sm" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#partyCarousel" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#partyCarousel" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#partyCarousel" data-bs-slide-to="2"></button>
+            </div>
+            <div class="carousel-inner rounded-4">
+                <div class="carousel-item active">
+                    <img src="https://images.unsplash.com/photo-1533174072545-e8d4aa97edf9?auto=format&fit=crop&w=800&q=80" class="d-block w-100" alt="Party">
+                    <div class="carousel-caption">
+                        <h5>Good Times</h5>
+                        <p class="mb-0">Keep track of the fun!</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80" class="d-block w-100" alt="Food">
+                    <div class="carousel-caption">
+                        <h5>Food & Drinks</h5>
+                        <p class="mb-0">Split the bill easily.</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80" class="d-block w-100" alt="Crowd">
+                    <div class="carousel-caption">
+                        <h5>Settle Up</h5>
+                        <p class="mb-0">No more math headaches.</p>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#partyCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#partyCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            </button>
+        </div>
+
+        <div class="card text-center p-4">
+            <h3 class="mb-3">Ready to start?</h3>
+            <p class="text-muted mb-4">Admin: Enable "Admin Mode" top right to add data.</p>
+            <button class="btn btn-primary btn-lg-custom w-100" onclick="switchTab('people')">View Party Members 🚀</button>
+        </div>
+    </div>
+
+    <!-- SECTION 1: ADD PEOPLE -->
+    <div id="view-people" class="d-none">
+        <!-- Admin Only: Add Person Card -->
+        <div id="admin-add-person" class="card mb-3 d-none bg-light border-primary border">
+            <div class="card-body">
+                <label class="form-label fw-bold text-primary">👑 Admin: Add Person</label>
+                <div class="input-group mb-3">
+                    <input type="text" id="inputName" class="form-control form-control-lg" placeholder="e.g. Rahul, Priya">
+                    <button class="btn btn-primary" type="button" onclick="addPerson()">
+                        Add <i class="bi bi-person-plus-fill"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+                <span>Party Members</span>
+                <span class="badge bg-primary rounded-pill" id="badgeCount">0</span>
+            </div>
+            <ul class="list-group list-group-flush" id="peopleList">
+                <li class="list-group-item text-center text-muted py-4">No people added yet.</li>
+            </ul>
+        </div>
+        
+        <div class="d-grid gap-2 mt-4">
+            <button class="btn btn-outline-primary btn-lg-custom" onclick="switchTab('expenses')">Next: View Expenses &rarr;</button>
+        </div>
+    </div>
+
+    <!-- SECTION 2: ADD EXPENSES -->
+    <div id="view-expenses" class="d-none">
+        <!-- Admin Only: Add Expense Card -->
+        <div id="admin-add-expense" class="card mb-4 d-none bg-light border-primary border">
+            <div class="card-body">
+                <h5 class="card-title mb-3 text-primary">👑 Admin: New Expense</h5>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Who Paid?</label>
+                    <select id="selectPayer" class="form-select form-select-lg">
+                        <option value="" disabled selected>Select Person...</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Amount (₹)</label>
+                    <input type="number" id="inputAmount" class="form-control form-control-lg" placeholder="0.00" inputmode="decimal">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Description</label>
+                    <input type="text" id="inputDesc" class="form-control" placeholder="e.g. Pizza, Taxi">
+                </div>
+
+                <!-- Image Upload Input -->
+                <div class="mb-4">
+                    <label class="form-label text-muted small">Bill Photo (Optional)</label>
+                    <input type="file" id="inputBillImg" class="form-control" accept="image/*">
+                </div>
+
+                <div class="d-grid">
+                    <button class="btn btn-success btn-lg-custom" onclick="addExpense()">Add Expense 💸</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-2 px-2">
+            <h5 class="mb-0">History</h5>
+            <h5 class="mb-0 text-primary">Total: ₹<span id="displayTotal">0</span></h5>
+        </div>
+
+        <div class="card">
+            <ul class="list-group list-group-flush" id="expensesList">
+                <li class="list-group-item text-center text-muted py-4">No expenses recorded yet.</li>
+            </ul>
+        </div>
+
+        <div class="d-grid gap-2 mt-4">
+            <button class="btn btn-primary btn-lg-custom" onclick="switchTab('results'); calculate();">Calculate & Settle &rarr;</button>
+        </div>
+    </div>
+
+    <!-- SECTION 3: RESULTS -->
+    <div id="view-results" class="d-none">
+        <!-- Summary Card -->
+        <div class="card bg-primary text-white text-center mb-4">
+            <div class="card-body py-4">
+                <p class="mb-1 opacity-75">Total Party Cost</p>
+                <h1 class="display-4 fw-bold mb-0">₹<span id="resultTotal">0</span></h1>
+                <div class="mt-3 badge bg-white text-primary fs-6 p-2">
+                    ₹<span id="resultPerPerson">0</span> per person
+                </div>
+            </div>
+        </div>
+
+        <h5 class="mb-3 px-2">Settlement Plan</h5>
+        <div id="settlementList">
+            <!-- Dynamic Settlements will appear here -->
+        </div>
+
+        <div id="admin-reset-btn" class="d-grid gap-2 mt-5 d-none">
+            <button class="btn btn-outline-danger" onclick="resetApp()">👑 Reset All Data 🔄</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Bill Receipt</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0">
+        <img id="modalImage" src="" alt="Bill" class="img-fluid w-100">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // --- Data Store ---
+    let people = [];
+    let expenses = [];
+    let isAdmin = false;
+
+    // --- Selectors ---
+    const dom = {
+        nameInput: document.getElementById('inputName'),
+        peopleList: document.getElementById('peopleList'),
+        badgeCount: document.getElementById('badgeCount'),
+        payerSelect: document.getElementById('selectPayer'),
+        
+        amountInput: document.getElementById('inputAmount'),
+        descInput: document.getElementById('inputDesc'),
+        billImgInput: document.getElementById('inputBillImg'),
+        expensesList: document.getElementById('expensesList'),
+        displayTotal: document.getElementById('displayTotal'),
+        
+        resultTotal: document.getElementById('resultTotal'),
+        resultPerPerson: document.getElementById('resultPerPerson'),
+        settlementList: document.getElementById('settlementList'),
+        
+        modalImage: document.getElementById('modalImage'),
+        
+        // Admin Elements
+        adminSwitch: document.getElementById('adminSwitch'),
+        adminLabel: document.getElementById('adminLabel'),
+        adminAddPerson: document.getElementById('admin-add-person'),
+        adminAddExpense: document.getElementById('admin-add-expense'),
+        adminResetBtn: document.getElementById('admin-reset-btn'),
+
+        tabs: {
+            home: document.getElementById('tab-home'),
+            people: document.getElementById('tab-people'),
+            expenses: document.getElementById('tab-expenses'),
+            results: document.getElementById('tab-results')
+        },
+        views: {
+            home: document.getElementById('view-home'),
+            people: document.getElementById('view-people'),
+            expenses: document.getElementById('view-expenses'),
+            results: document.getElementById('view-results')
+        }
+    };
+
+    // --- Admin Logic ---
+    function toggleAdminMode() {
+        isAdmin = dom.adminSwitch.checked;
+        
+        if (isAdmin) {
+            dom.adminLabel.innerText = "Admin On";
+            dom.adminLabel.classList.add('text-primary');
+            dom.adminAddPerson.classList.remove('d-none');
+            dom.adminAddExpense.classList.remove('d-none');
+            dom.adminResetBtn.classList.remove('d-none');
+        } else {
+            dom.adminLabel.innerText = "Viewer";
+            dom.adminLabel.classList.remove('text-primary');
+            dom.adminAddPerson.classList.add('d-none');
+            dom.adminAddExpense.classList.add('d-none');
+            dom.adminResetBtn.classList.add('d-none');
+        }
+    }
+
+    // --- Navigation ---
+    function switchTab(tabName) {
+        Object.values(dom.tabs).forEach(el => el.classList.remove('active'));
+        dom.tabs[tabName].classList.add('active');
+        Object.values(dom.views).forEach(el => el.classList.add('d-none'));
+        dom.views[tabName].classList.remove('d-none');
+    }
+
+    // --- Feature: Add People ---
+    function addPerson() {
+        const name = dom.nameInput.value.trim();
+        if(!name) return alert('Please enter a name!');
+        if(people.includes(name)) return alert('Person already exists!');
+
+        people.push(name);
+        dom.nameInput.value = '';
+        dom.nameInput.focus();
+        renderPeople();
+    }
+
+    function renderPeople() {
+        dom.badgeCount.innerText = people.length;
+        if (people.length === 0) {
+            dom.peopleList.innerHTML = '<li class="list-group-item text-center text-muted py-4">No people added yet.</li>';
+        } else {
+            dom.peopleList.innerHTML = people.map(p => `
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="fw-medium">${p}</span>
+                    <i class="bi bi-person-check-fill text-success"></i>
+                </li>
+            `).join('');
+        }
+        dom.payerSelect.innerHTML = `<option value="" disabled selected>Select Person...</option>` + 
+            people.map(p => `<option value="${p}">${p}</option>`).join('');
+    }
+
+    // --- Feature: Add Expenses with Images ---
+    function addExpense() {
+        const payer = dom.payerSelect.value;
+        const amount = parseFloat(dom.amountInput.value);
+        const desc = dom.descInput.value || 'General';
+        const file = dom.billImgInput.files[0];
+
+        if(!payer) return alert('Select who paid!');
+        if(!amount || amount <= 0) return alert('Enter a valid amount!');
+
+        const saveAndRender = (imgData) => {
+            expenses.push({ payer, amount, desc, image: imgData });
+            
+            // Reset Inputs
+            dom.amountInput.value = '';
+            dom.descInput.value = '';
+            dom.billImgInput.value = ''; 
+            
+            renderExpenses();
+        };
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                saveAndRender(e.target.result); 
+            };
+            reader.readAsDataURL(file);
+        } else {
+            saveAndRender(null); 
+        }
+    }
+
+    function renderExpenses() {
+        const total = expenses.reduce((sum, item) => sum + item.amount, 0);
+        dom.displayTotal.innerText = total.toFixed(2);
+
+        if (expenses.length === 0) {
+            dom.expensesList.innerHTML = '<li class="list-group-item text-center text-muted py-4">No expenses recorded yet.</li>';
+        } else {
+            dom.expensesList.innerHTML = [...expenses].reverse().map((e, index) => {
+                const originalIndex = expenses.length - 1 - index;
+                
+                return `
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        ${e.image 
+                            ? `<i class="bi bi-receipt receipt-icon-btn text-primary" onclick="showImage(${originalIndex})"></i>` 
+                            : `<i class="bi bi-cash-coin receipt-icon-btn"></i>`}
+                        
+                        <div>
+                            <div class="fw-bold text-dark">${e.desc}</div>
+                            <small class="text-muted">Paid by ${e.payer}</small>
+                        </div>
+                    </div>
+                    <span class="price-tag">₹${e.amount.toFixed(2)}</span>
+                </li>
+            `}).join('');
+        }
+    }
+
+    window.showImage = function(index) {
+        const expense = expenses[index];
+        if (expense && expense.image) {
+            dom.modalImage.src = expense.image;
+            const myModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            myModal.show();
+        }
+    }
+
+    // --- Feature: Calculate & Settle ---
+    function calculate() {
+        if(people.length === 0) return;
+
+        const total = expenses.reduce((sum, item) => sum + item.amount, 0);
+        const perPerson = total / people.length;
+
+        dom.resultTotal.innerText = total.toFixed(2);
+        dom.resultPerPerson.innerText = perPerson.toFixed(2);
+
+        let balances = {};
+        people.forEach(p => balances[p] = 0);
+        expenses.forEach(e => balances[e.payer] += e.amount);
+        people.forEach(p => balances[p] -= perPerson);
+
+        let debtors = [];
+        let creditors = [];
+
+        for(const [name, amount] of Object.entries(balances)) {
+            if(amount < -0.01) debtors.push({ name, amount }); 
+            if(amount > 0.01) creditors.push({ name, amount }); 
+        }
+
+        debtors.sort((a,b) => a.amount - b.amount); 
+        creditors.sort((a,b) => b.amount - a.amount); 
+
+        let settlementHTML = '';
+        let i = 0, j = 0;
+
+        while(i < debtors.length && j < creditors.length) {
+            let debtor = debtors[i];
+            let creditor = creditors[j];
+            let amount = Math.min(Math.abs(debtor.amount), creditor.amount);
+
+            settlementHTML += `
+                <div class="card settlement-card mb-3 shadow-sm">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0 fw-bold text-dark">${debtor.name}</h5>
+                            <small class="text-muted">pays ${creditor.name}</small>
+                        </div>
+                        <div class="fs-4 fw-bold text-primary">₹${amount.toFixed(2)}</div>
+                    </div>
+                </div>
+            `;
+
+            debtor.amount += amount;
+            creditor.amount -= amount;
+
+            if(Math.abs(debtor.amount) < 0.01) i++;
+            if(creditor.amount < 0.01) j++;
+        }
+
+        if(!settlementHTML) {
+            settlementHTML = `
+                <div class="alert alert-success text-center">
+                    All settled! No one owes anything.
+                </div>`;
+        }
+        dom.settlementList.innerHTML = settlementHTML;
+    }
+
+    function resetApp() {
+        if(confirm('Are you sure you want to clear all data?')) {
+            people = [];
+            expenses = [];
+            renderPeople();
+            renderExpenses();
+            switchTab('home');
+        }
+    }
+    
+    // Initialize Admin Mode off
+    toggleAdminMode();
+</script>
+
+</body>
+</html>
